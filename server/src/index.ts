@@ -61,7 +61,23 @@ async function main() {
     }
   });
 
-  // TODO endpoint that takes a userId and a username and updates the user's name
+  app.put("/users/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { username } = req.body;
+
+      await rethinkDBClient.executeQuery(
+        r
+          .db("forearm-scale")
+          .table("users")
+          .get(userId)
+          .update({ name: username }, { returnChanges: true })
+      );
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ error: "Failed to update user" });
+    }
+  });
 
   app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
