@@ -1,30 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { createRoom } from "../services/api";
 import { openWebSocket } from "../services/websocket";
+import { useParams } from "react-router-dom";
 
 const Room: React.FC = () => {
-  const [roomId, setRoomId] = useState("");
+  const { roomId } = useParams<{ roomId: string }>();
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const handleWebSocketMessage = (data: string) => {
-      setMessage(data);
-    };
+    if (!roomId) return;
 
-    const createAndOpenRoom = async () => {
-      const roomId = await createRoom();
-      setRoomId(roomId);
-      return openWebSocket(roomId, handleWebSocketMessage);
-    };
-
-    console.log("Creating and opening room...");
-    createAndOpenRoom();
+    openWebSocket(roomId, (data) => setMessage(data));
 
     return () => {
       // Clean up WebSocket connection if component unmounts
       // ...
     };
-  }, []);
+  }, [roomId]);
+
+  if (!roomId) return <div>Invalid room ID</div>;
 
   return (
     <div>
