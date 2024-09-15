@@ -196,6 +196,7 @@ async function main() {
             r
               .db("forearm-scale")
               .table("users")
+              // TODO No user authentication means users could be lying about which user they are.
               .get(parsedData.userId)
               .update({ handPosition: parsedData.handPosition })
           );
