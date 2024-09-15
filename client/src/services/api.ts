@@ -35,6 +35,23 @@ export async function createRoom(username: string) {
   return await response.json();
 }
 
+export async function createUser(roomId: string, name: string) {
+  const response = await fetch(`http://localhost:3000/rooms/${roomId}/users`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create user");
+  }
+
+  const { userId } = await response.json();
+  return userId;
+}
+
 export async function updateUsername(
   roomId: string,
   userId: string,

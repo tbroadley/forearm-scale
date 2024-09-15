@@ -8,7 +8,7 @@ import {
   User,
 } from "../services/api";
 
-const Room: React.FC = () => {
+const LoggedInRoom: React.FC = () => {
   const { roomId, userId } = useParams<{ roomId: string; userId: string }>();
   const [_room, setRoom] = useState<RoomType | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -108,4 +108,4 @@ const Room: React.FC = () => {
   );
 };
 
-export default Room;
+export default LoggedInRoom;

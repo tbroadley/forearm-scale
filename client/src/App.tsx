@@ -1,10 +1,12 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Room from "./components/Room";
+import LoggedOutRoom from "./components/LoggedOutRoom";
+import LoggedInRoom from "./components/LoggedInRoom";
 import Homepage from "./components/Homepage";
 
 const router = createBrowserRouter([
   { path: "/", element: <Homepage /> },
-  { path: "/rooms/:roomId/users/:userId", element: <Room /> },
+  { path: "/rooms/:roomId", element: <LoggedOutRoom /> },
+  { path: "/rooms/:roomId/users/:userId", element: <LoggedInRoom /> },
 ]);
 
 function App() {
