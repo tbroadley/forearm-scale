@@ -32,7 +32,36 @@ async function main() {
 
   await initializeDatabase(rethinkDBClient);
 
-  // Set up middleware and routes here
+  app.use(express.json());
+
+  app.post("/rooms", async (req, res) => {
+    try {
+      const { username } = req.body;
+
+      // Create a room
+      const room = await rethinkDBClient.executeQuery(
+        r.db("forearm-scale").table("rooms").insert({})
+      );
+
+      // Create a user associated with the room
+      const user = await rethinkDBClient.executeQuery(
+        r
+          .db("forearm-scale")
+          .table("users")
+          .insert({ name: username, roomId: room.generated_keys[0] })
+      );
+
+      res.json({
+        roomId: room.generated_keys[0],
+        userId: user.generated_keys[0],
+      });
+    } catch (error) {
+      console.error("Error creating room:", error);
+      res.status(500).json({ error: "Failed to create room" });
+    }
+  });
+
+  // TODO endpoint that takes a userId and a username and updates the user's name
 
   app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
