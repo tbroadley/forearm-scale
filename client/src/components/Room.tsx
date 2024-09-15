@@ -9,11 +9,10 @@ const Room: React.FC = () => {
   useEffect(() => {
     if (!roomId) return;
 
-    openWebSocket(roomId, (data) => setMessage(data));
+    const socket = openWebSocket(roomId, (data) => setMessage(data));
 
     return () => {
-      // Clean up WebSocket connection if component unmounts
-      // ...
+      socket.close();
     };
   }, [roomId]);
 

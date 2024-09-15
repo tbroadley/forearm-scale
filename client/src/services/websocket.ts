@@ -20,4 +20,6 @@ export function openWebSocket(
   socket.onerror = (error) => {
     console.error("WebSocket error:", error);
   };
+
+  return socket;
 }
