@@ -4,7 +4,7 @@ import Homepage from "./components/Homepage";
 
 const router = createBrowserRouter([
   { path: "/", element: <Homepage /> },
-  { path: "/rooms/:roomId", element: <Room /> },
+  { path: "/rooms/:roomId/users/:userId", element: <Room /> },
 ]);
 
 function App() {

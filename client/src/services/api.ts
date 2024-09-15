@@ -19,7 +19,7 @@ export async function getRoom(
   return response.json();
 }
 
-export async function createRoom(username: string): Promise<string> {
+export async function createRoom(username: string) {
   const response = await fetch("http://localhost:3000/rooms", {
     method: "POST",
     headers: {
@@ -32,6 +32,26 @@ export async function createRoom(username: string): Promise<string> {
     throw new Error("Failed to create room");
   }
 
-  const { roomId } = await response.json();
-  return roomId;
+  return await response.json();
+}
+
+export async function updateUsername(
+  roomId: string,
+  userId: string,
+  name: string
+) {
+  const response = await fetch(
+    `http://localhost:3000/rooms/${roomId}/users/${userId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name }),
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to update username");
+  }
 }

@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { openWebSocket } from "../services/websocket";
 import { useParams } from "react-router-dom";
-import { getRoom, Room as RoomType, User } from "../services/api";
+import {
+  getRoom,
+  Room as RoomType,
+  updateUsername,
+  User,
+} from "../services/api";
 
 const Room: React.FC = () => {
-  const { roomId } = useParams<{ roomId: string }>();
+  const { roomId, userId } = useParams<{ roomId: string; userId: string }>();
   const [_room, setRoom] = useState<RoomType | null>(null);
   const [users, setUsers] = useState<User[]>([]);
 
@@ -62,6 +67,8 @@ const Room: React.FC = () => {
 
   if (!roomId) return <div>Invalid room ID</div>;
 
+  if (!userId) return <div>Invalid user ID</div>;
+
   return (
     <div>
       <h1>Room {roomId}</h1>
@@ -69,7 +76,32 @@ const Room: React.FC = () => {
       <h2>Users</h2>
       <ul>
         {users.map((user) => (
-          <li key={user.id}>{user.name}</li>
+          <li key={user.id}>
+            {user.id === userId ? (
+              <>
+                <input
+                  type="text"
+                  value={user.name}
+                  onChange={(e) =>
+                    setUsers((users) =>
+                      users.map((u) =>
+                        u.id === user.id ? { ...u, name: e.target.value } : u
+                      )
+                    )
+                  }
+                />
+                <button
+                  onClick={async () =>
+                    updateUsername(roomId, user.id, user.name)
+                  }
+                >
+                  Save
+                </button>
+              </>
+            ) : (
+              user.name
+            )}
+          </li>
         ))}
       </ul>
     </div>

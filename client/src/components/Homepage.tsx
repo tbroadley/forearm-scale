@@ -8,8 +8,8 @@ const Homepage: React.FC = () => {
   const navigate = useNavigate();
 
   const onSubmit = async () => {
-    const roomId = await createRoom(name);
-    navigate(`/rooms/${roomId}`);
+    const { roomId, userId } = await createRoom(name);
+    navigate(`/rooms/${roomId}/users/${userId}`);
   };
 
   return (
