@@ -1,4 +1,5 @@
 import * as r from "rethinkdb";
+import cors from "cors";
 import WebSocket from "ws";
 import express from "express";
 import RethinkDBClient from "./rethinkdb";
@@ -26,13 +27,14 @@ async function initializeDatabase(rethinkDBClient: RethinkDBClient) {
 }
 
 async function main() {
-  const app = express();
-
   const rethinkDBClient = new RethinkDBClient();
   await rethinkDBClient.connect();
 
   await initializeDatabase(rethinkDBClient);
 
+  const app = express();
+
+  app.use(cors({ origin: "*" })); // TODO
   app.use(express.json());
 
   app.post("/rooms", async (req, res) => {
@@ -106,27 +108,25 @@ async function main() {
 
   const wss = new WebSocket.Server({ noServer: true });
   wss.on("connection", async (ws, request) => {
+    console.log("WebSocket connection established", request.url);
     if (!request.url) {
       ws.close(1011, "Invalid URL");
       return;
     }
 
     const { pathname } = new URL(request.url, `http://${request.headers.host}`);
-    const [rooms, roomId] = pathname.split("/", 2);
+    console.log("Pathname:", pathname);
+    const [_, rooms, roomId] = pathname.split("/", 3);
     if (rooms !== "rooms") {
       ws.close(1011, "Invalid URL");
       return;
     }
 
+    console.log(`WebSocket connection established for room ${roomId}`);
     const roomChanges = r
       .db("forearm-scale")
       .table("rooms")
       .getAll(roomId)
-      .outerJoin(r.db("forearm-scale").table("users"), (room, user) =>
-        room("id").eq(user("roomId"))
-      )
-      .without({ left: { id: true } } as any) // TODO does this work?
-      .zip()
       .changes();
 
     const result = await rethinkDBClient.executeQuery(roomChanges);
@@ -137,12 +137,31 @@ async function main() {
         return;
       }
 
-      ws.send(JSON.stringify(change));
+      ws.send(JSON.stringify({ type: "room", change }));
+    });
+
+    const userChanges = r
+      .db("forearm-scale")
+      .table("users")
+      .filter({ roomId })
+      .changes();
+
+    const userResult = await rethinkDBClient.executeQuery(userChanges);
+    userResult.each((error, change) => {
+      if (error) {
+        console.error("Error processing change:", error);
+        ws.close(1011, "Internal error");
+        return;
+      }
+
+      ws.send(JSON.stringify({ type: "user", change }));
     });
   });
 
   server.on("upgrade", (request, socket, head) => {
+    console.log("Upgrading WebSocket connection...");
     wss.handleUpgrade(request, socket, head, (ws) => {
+      console.log("WebSocket connection upgraded");
       wss.emit("connection", ws, request);
     });
   });
