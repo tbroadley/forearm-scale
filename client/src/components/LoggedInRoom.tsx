@@ -12,6 +12,7 @@ const LoggedInRoom: React.FC = () => {
   const { roomId, userId } = useParams<{ roomId: string; userId: string }>();
   const [_room, setRoom] = useState<RoomType | null>(null);
   const [users, setUsers] = useState<User[]>([]);
+  const [socket, setSocket] = useState<WebSocket | null>(null);
 
   useEffect(() => {
     if (!roomId) return;
@@ -50,7 +51,10 @@ const LoggedInRoom: React.FC = () => {
       }
     });
 
+    setSocket(socket);
+
     return () => {
+      setSocket(null);
       socket.close();
     };
   }, [roomId]);
@@ -99,8 +103,33 @@ const LoggedInRoom: React.FC = () => {
                 </button>
               </>
             ) : (
-              user.name
+              <span>{user.name}</span>
             )}
+
+            <input
+              disabled={user.id !== userId}
+              type="range"
+              min={0}
+              max={1}
+              step={0.01}
+              value={user.handPosition}
+              onChange={(e) => {
+                setUsers((users) =>
+                  users.map((u) =>
+                    u.id === user.id
+                      ? { ...u, handPosition: parseFloat(e.target.value) }
+                      : u
+                  )
+                );
+                socket?.send(
+                  JSON.stringify({
+                    type: "handPosition",
+                    userId: user.id,
+                    handPosition: parseFloat(e.target.value),
+                  })
+                );
+              }}
+            />
           </li>
         ))}
       </ul>

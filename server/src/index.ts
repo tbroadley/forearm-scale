@@ -48,10 +48,11 @@ async function main() {
 
       // Create a user associated with the room
       const user = await rethinkDBClient.executeQuery(
-        r
-          .db("forearm-scale")
-          .table("users")
-          .insert({ name: username, roomId: room.generated_keys[0] })
+        r.db("forearm-scale").table("users").insert({
+          name: username,
+          roomId: room.generated_keys[0],
+          sliderPosition: 0.5,
+        })
       );
 
       res.json({
@@ -97,7 +98,10 @@ async function main() {
 
       // Create a user associated with the room
       const user = await rethinkDBClient.executeQuery(
-        r.db("forearm-scale").table("users").insert({ name, roomId })
+        r
+          .db("forearm-scale")
+          .table("users")
+          .insert({ name, roomId, sliderPosition: 0.5 })
       );
 
       res.json({
@@ -181,6 +185,24 @@ async function main() {
       }
 
       ws.send(JSON.stringify({ type: "user", change }));
+    });
+
+    ws.on("message", async (data) => {
+      const parsedData = JSON.parse(data.toString());
+
+      switch (parsedData.type) {
+        case "handPosition":
+          await rethinkDBClient.executeQuery(
+            r
+              .db("forearm-scale")
+              .table("users")
+              .get(parsedData.userId)
+              .update({ handPosition: parsedData.handPosition })
+          );
+          break;
+        default:
+          console.error("Unknown message type:", parsedData.type);
+      }
     });
   });
 

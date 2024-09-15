@@ -5,6 +5,7 @@ export interface Room {
 export interface User {
   id: string;
   name: string;
+  handPosition: number;
 }
 
 export async function getRoom(
