@@ -64,6 +64,32 @@ async function main() {
     }
   });
 
+  app.get("/rooms/:roomId", async (req, res) => {
+    try {
+      const { roomId } = req.params;
+
+      const room = await rethinkDBClient.executeQuery(
+        r.db("forearm-scale").table("rooms").get(roomId)
+      );
+
+      const users = await rethinkDBClient.executeQuery(
+        r
+          .db("forearm-scale")
+          .table("users")
+          .filter({ roomId })
+          .coerceTo("array")
+      );
+
+      res.json({
+        room,
+        users,
+      });
+    } catch (error) {
+      console.error("Error getting room and users:", error);
+      res.status(500).json({ error: "Failed to get room and users" });
+    }
+  });
+
   app.post("/rooms/:roomId/users", async (req, res) => {
     try {
       const { roomId } = req.params;
