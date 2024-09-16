@@ -7,6 +7,7 @@ import {
   updateUsername,
   User,
 } from "../services/api";
+import debounce from "lodash/debounce";
 
 const LoggedInRoom: React.FC = () => {
   const { roomId, userId } = useParams<{ roomId: string; userId: string }>();
@@ -25,6 +26,8 @@ const LoggedInRoom: React.FC = () => {
           setRoom(parsedData.change.new_val);
           break;
         case "user":
+          // TODO filter out events for the current user.
+
           setUsers((users) => {
             if (!parsedData.change.new_val) {
               return users.filter(
@@ -72,6 +75,16 @@ const LoggedInRoom: React.FC = () => {
   if (!roomId) return <div>Invalid room ID</div>;
 
   if (!userId) return <div>Invalid user ID</div>;
+
+  const sendHandPosition = debounce((userId: string, handPosition: number) => {
+    socket?.send(
+      JSON.stringify({
+        type: "handPosition",
+        userId,
+        handPosition,
+      })
+    );
+  }, 100);
 
   return (
     <div>
@@ -121,13 +134,7 @@ const LoggedInRoom: React.FC = () => {
                       : u
                   )
                 );
-                socket?.send(
-                  JSON.stringify({
-                    type: "handPosition",
-                    userId: user.id,
-                    handPosition: parseFloat(e.target.value),
-                  })
-                );
+                sendHandPosition(user.id, parseFloat(e.target.value));
               }}
             />
           </li>
