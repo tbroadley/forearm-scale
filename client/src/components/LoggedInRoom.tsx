@@ -22,7 +22,7 @@ const sendHandPosition = throttle(
     );
   },
   // TODO: Increase this after switching to a custom input that allows transition animations.
-  1_000 / 60,
+  200,
   { leading: true, trailing: true }
 );
 
@@ -162,7 +162,16 @@ const LoggedInRoom: React.FC = () => {
                   }
                 }}
               >
-                <div>
+                <div
+                  style={
+                    user.id === userId
+                      ? {}
+                      : {
+                          transition: "transform 0.2s",
+                          transitionTimingFunction: "linear",
+                        }
+                  }
+                >
                   <img
                     src="/arm.svg"
                     alt="Hand"
