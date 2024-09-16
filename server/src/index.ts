@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import * as r from "rethinkdb";
 import cors from "cors";
 import WebSocket from "ws";

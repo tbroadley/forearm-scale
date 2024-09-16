@@ -2,7 +2,9 @@ export function openWebSocket(
   roomId: string,
   onMessage: (message: string) => void
 ) {
-  const socket = new WebSocket(`ws://localhost:3000/rooms/${roomId}`);
+  const socket = new WebSocket(
+    `${import.meta.env.VITE_API_URL.replace("http", "ws")}/rooms/${roomId}`
+  );
 
   socket.onopen = () => {
     console.log("WebSocket connection opened");

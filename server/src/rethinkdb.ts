@@ -8,10 +8,16 @@ class RethinkDBClient {
   }
 
   async connect() {
+    const host = process.env.RETHINKDB_HOST;
+    const port = process.env.RETHINKDB_PORT;
+    if (!host || !port) {
+      throw new Error("RETHINKDB_HOST or RETHINKDB_PORT not set");
+    }
+
     try {
       this.connection = await r.connect({
-        host: "localhost",
-        port: 28015,
+        host,
+        port: parseInt(port),
         db: "forearm-scale",
       });
       console.log("Connected to RethinkDB");

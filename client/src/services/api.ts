@@ -11,7 +11,9 @@ export interface User {
 export async function getRoom(
   roomId: string
 ): Promise<{ room: Room; users: User[] }> {
-  const response = await fetch(`http://localhost:3000/rooms/${roomId}`);
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/rooms/${roomId}`
+  );
 
   if (!response.ok) {
     throw new Error("Failed to get room");
@@ -21,7 +23,7 @@ export async function getRoom(
 }
 
 export async function createRoom(username: string) {
-  const response = await fetch("http://localhost:3000/rooms", {
+  const response = await fetch("${import.meta.env.VITE_API_URL}/rooms", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -37,13 +39,16 @@ export async function createRoom(username: string) {
 }
 
 export async function createUser(roomId: string, name: string) {
-  const response = await fetch(`http://localhost:3000/rooms/${roomId}/users`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ name }),
-  });
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/rooms/${roomId}/users`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name }),
+    }
+  );
 
   if (!response.ok) {
     throw new Error("Failed to create user");
@@ -59,7 +64,7 @@ export async function updateUsername(
   name: string
 ) {
   const response = await fetch(
-    `http://localhost:3000/rooms/${roomId}/users/${userId}`,
+    `${import.meta.env.VITE_API_URL}/rooms/${roomId}/users/${userId}`,
     {
       method: "PUT",
       headers: {
