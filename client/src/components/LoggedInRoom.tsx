@@ -7,6 +7,7 @@ import {
   updateUsername,
   User,
 } from "../services/api";
+import sortBy from "lodash/sortBy";
 import throttle from "lodash/throttle";
 import Draggable from "react-draggable";
 
@@ -93,14 +94,21 @@ const LoggedInRoom: React.FC = () => {
 
   if (!userId) return <div>Invalid user ID</div>;
 
+  const sortedUsers = sortBy(users, "id");
+
   return (
     <div>
       <h1>Room {roomId}</h1>
 
-      <h2>Users</h2>
-      <ul>
-        {users.map((user) => (
-          <li key={user.id}>
+      <div style={{ position: "relative", width: "1000px", height: "1000px" }}>
+        {sortedUsers.map((user, index) => (
+          <div
+            key={user.id}
+            style={{
+              position: "absolute",
+              left: `${index * 300}px`,
+            }}
+          >
             {user.id === userId ? (
               <>
                 <input
@@ -176,9 +184,9 @@ const LoggedInRoom: React.FC = () => {
                 />
               </Draggable>
             </div>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };
