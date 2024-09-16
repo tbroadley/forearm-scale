@@ -205,7 +205,7 @@ const LoggedInRoom: React.FC = () => {
                       updateUsername(roomId, user.id, user.name)
                     }
                   >
-                    Update
+                    Change name
                   </button>
                 </>
               ) : (
