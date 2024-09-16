@@ -36,7 +36,10 @@ async function main() {
 
   const app = express();
 
-  app.use(cors({ origin: "*" })); // TODO
+  if (process.env.NODE_ENV === "development") {
+    app.use(cors({ origin: "*" }));
+  }
+
   app.use(express.json());
 
   app.post("/rooms", async (req, res) => {
