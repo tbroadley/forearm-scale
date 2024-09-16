@@ -20,6 +20,7 @@ const sendHandPosition = throttle(
       })
     );
   },
+  // TODO: Increase this after switching to a custom input that allows transition animations.
   1_000 / 60
 );
 
