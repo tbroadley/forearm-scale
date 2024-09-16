@@ -23,7 +23,7 @@ const LoggedOutRoom: React.FC = () => {
 
   return (
     <div>
-      <h1>Join room {roomId}</h1>
+      <h1>Join room</h1>
       <input
         type="text"
         value={name}

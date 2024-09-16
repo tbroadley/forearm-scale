@@ -14,7 +14,7 @@ const Homepage: React.FC = () => {
 
   return (
     <div>
-      <h1>Homepage</h1>
+      <h1>Create room</h1>
       <input
         type="text"
         value={name}
