@@ -10,7 +10,6 @@ import {
 import sortBy from "lodash/sortBy";
 import throttle from "lodash/throttle";
 import Draggable from "react-draggable";
-import { circlePoints } from "../util/geometry";
 
 const sendHandPosition = throttle(
   (socket: WebSocket, userId: string, handPosition: number) => {
@@ -104,120 +103,96 @@ const LoggedInRoom: React.FC = () => {
     ...sortedUsers.slice(0, userIndex),
   ];
 
-  const radius = 300;
-
-  const points = circlePoints({
-    radius,
-    numPoints: reorderedUsers.length,
-  });
-
   return (
     <div>
       <h1>Room {roomId}</h1>
 
-      <div style={{ position: "relative", width: "1000px", height: "1000px" }}>
-        {reorderedUsers.map((user, index) => {
-          const distanceFromFirstPoint = Math.sqrt(
-            (points[0][0] - points[index][0]) ** 2 +
-              (points[0][1] - points[index][1]) ** 2
-          );
-          const scale = 0.9 + 0.1 * (1 - distanceFromFirstPoint / radius);
-          return (
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        {reorderedUsers.map((user, index) => (
+          <div key={user.id}>
             <div
-              key={user.id}
               style={{
-                position: "absolute",
-                left: `${500 + points[index][0]}px`,
-                bottom: `${500 + points[index][1]}px`,
+                position: "relative",
+                width: "280px",
+                height: "300px",
               }}
             >
-              <div
+              <img
+                src="/arm.svg"
+                alt="Arm"
                 style={{
-                  position: "relative",
-                  width: "280px",
-                  height: "300px",
-                  transform: `scale(${scale})`,
+                  width: "200px",
+                  position: "absolute",
+                  top: "60px",
+                  bottom: "90px",
+                  transform: "rotate(90deg) scaleY(-1)",
+                  transformOrigin: "0 0",
+                }}
+              />
+
+              <Draggable
+                disabled={user.id !== userId}
+                axis="y"
+                bounds="parent"
+                position={{ x: 0, y: (1 - user.handPosition) * 200 }}
+                onDrag={(_, data) => {
+                  let handPosition = 1 - data.y / 200;
+                  if (handPosition < 0) {
+                    handPosition = 0;
+                  }
+
+                  setUsers((users) =>
+                    users.map((u) =>
+                      u.id === user.id ? { ...u, handPosition } : u
+                    )
+                  );
+
+                  if (socket) {
+                    sendHandPosition(socket, user.id, handPosition);
+                  }
                 }}
               >
                 <img
                   src="/arm.svg"
-                  alt="Arm"
+                  alt="Hand"
+                  draggable={false}
                   style={{
                     width: "200px",
                     position: "absolute",
-                    top: "60px",
-                    bottom: "90px",
-                    transform: "rotate(90deg) scaleY(-1)",
-                    transformOrigin: "0 0",
+                    right: "0",
                   }}
                 />
-
-                <Draggable
-                  disabled={user.id !== userId}
-                  axis="y"
-                  bounds="parent"
-                  position={{ x: 0, y: (1 - user.handPosition) * 200 }}
-                  onDrag={(_, data) => {
-                    let handPosition = 1 - data.y / 200;
-                    if (handPosition < 0) {
-                      handPosition = 0;
-                    }
-
-                    setUsers((users) =>
-                      users.map((u) =>
-                        u.id === user.id ? { ...u, handPosition } : u
-                      )
-                    );
-
-                    if (socket) {
-                      sendHandPosition(socket, user.id, handPosition);
-                    }
-                  }}
-                >
-                  <img
-                    src="/arm.svg"
-                    alt="Hand"
-                    draggable={false}
-                    style={{
-                      width: "200px",
-                      position: "absolute",
-                      right: "0",
-                    }}
-                  />
-                </Draggable>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                {user.id === userId ? (
-                  <>
-                    <input
-                      type="text"
-                      value={user.name}
-                      onChange={(e) =>
-                        setUsers((users) =>
-                          users.map((u) =>
-                            u.id === user.id
-                              ? { ...u, name: e.target.value }
-                              : u
-                          )
-                        )
-                      }
-                    />
-                    <button
-                      onClick={async () =>
-                        updateUsername(roomId, user.id, user.name)
-                      }
-                    >
-                      Update
-                    </button>
-                  </>
-                ) : (
-                  <span>{user.name}</span>
-                )}
-              </div>
+              </Draggable>
             </div>
-          );
-        })}
+
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              {user.id === userId ? (
+                <>
+                  <input
+                    type="text"
+                    value={user.name}
+                    onChange={(e) =>
+                      setUsers((users) =>
+                        users.map((u) =>
+                          u.id === user.id ? { ...u, name: e.target.value } : u
+                        )
+                      )
+                    }
+                  />
+                  <button
+                    onClick={async () =>
+                      updateUsername(roomId, user.id, user.name)
+                    }
+                  >
+                    Update
+                  </button>
+                </>
+              ) : (
+                <span>{user.name}</span>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
