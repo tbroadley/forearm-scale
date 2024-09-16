@@ -152,16 +152,18 @@ const LoggedInRoom: React.FC = () => {
                   }
                 }}
               >
-                <img
-                  src="/arm.svg"
-                  alt="Hand"
-                  draggable={false}
-                  style={{
-                    width: "200px",
-                    position: "absolute",
-                    right: "0",
-                  }}
-                />
+                <div>
+                  <img
+                    src="/arm.svg"
+                    alt="Hand"
+                    draggable={false}
+                    style={{
+                      width: "200px",
+                      position: "absolute",
+                      right: "0",
+                    }}
+                  />
+                </div>
               </Draggable>
             </div>
 
