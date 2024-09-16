@@ -109,31 +109,6 @@ const LoggedInRoom: React.FC = () => {
               left: `${index * 300}px`,
             }}
           >
-            {user.id === userId ? (
-              <>
-                <input
-                  type="text"
-                  value={user.name}
-                  onChange={(e) =>
-                    setUsers((users) =>
-                      users.map((u) =>
-                        u.id === user.id ? { ...u, name: e.target.value } : u
-                      )
-                    )
-                  }
-                />
-                <button
-                  onClick={async () =>
-                    updateUsername(roomId, user.id, user.name)
-                  }
-                >
-                  Save
-                </button>
-              </>
-            ) : (
-              <span>{user.name}</span>
-            )}
-
             <div
               style={{ position: "relative", width: "280px", height: "300px" }}
             >
@@ -183,6 +158,33 @@ const LoggedInRoom: React.FC = () => {
                   }}
                 />
               </Draggable>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              {user.id === userId ? (
+                <>
+                  <input
+                    type="text"
+                    value={user.name}
+                    onChange={(e) =>
+                      setUsers((users) =>
+                        users.map((u) =>
+                          u.id === user.id ? { ...u, name: e.target.value } : u
+                        )
+                      )
+                    }
+                  />
+                  <button
+                    onClick={async () =>
+                      updateUsername(roomId, user.id, user.name)
+                    }
+                  >
+                    Update
+                  </button>
+                </>
+              ) : (
+                <span>{user.name}</span>
+              )}
             </div>
           </div>
         ))}
