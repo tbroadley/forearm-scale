@@ -107,8 +107,18 @@ const LoggedInRoom: React.FC = () => {
     <div>
       <h1>Room {roomId}</h1>
 
+      <button
+        onClick={async () => {
+          await navigator.clipboard.writeText(
+            `http://localhost:5173/rooms/${roomId}`
+          );
+        }}
+      >
+        Copy room link
+      </button>
+
       <div style={{ display: "flex", flexDirection: "row" }}>
-        {reorderedUsers.map((user, index) => (
+        {reorderedUsers.map((user) => (
           <div key={user.id}>
             <div
               style={{
