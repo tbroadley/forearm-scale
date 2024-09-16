@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "vite/client";
 import { openWebSocket } from "../services/websocket";
 import { useParams } from "react-router-dom";
 import {
