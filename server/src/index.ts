@@ -51,7 +51,7 @@ async function main() {
         r.db("forearm-scale").table("users").insert({
           name: username,
           roomId: room.generated_keys[0],
-          sliderPosition: 0.5,
+          handPosition: 0.5,
         })
       );
 
@@ -101,7 +101,7 @@ async function main() {
         r
           .db("forearm-scale")
           .table("users")
-          .insert({ name, roomId, sliderPosition: 0.5 })
+          .insert({ name, roomId, handPosition: 0.5 })
       );
 
       res.json({
