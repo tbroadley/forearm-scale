@@ -105,7 +105,7 @@ const LoggedInRoom: React.FC = () => {
 
   return (
     <div>
-      <h1>Room {roomId}</h1>
+      <h1>Room</h1>
 
       <button
         onClick={async () => {
