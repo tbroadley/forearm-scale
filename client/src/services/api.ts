@@ -23,7 +23,7 @@ export async function getRoom(
 }
 
 export async function createRoom(username: string) {
-  const response = await fetch("${import.meta.env.VITE_API_URL}/rooms", {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/rooms`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
