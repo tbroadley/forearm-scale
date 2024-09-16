@@ -127,7 +127,7 @@ const LoggedInRoom: React.FC = () => {
             )}
 
             <div
-              style={{ position: "relative", width: "280px", height: "250px" }}
+              style={{ position: "relative", width: "280px", height: "300px" }}
             >
               <img
                 src="/arm.svg"
@@ -135,8 +135,8 @@ const LoggedInRoom: React.FC = () => {
                 style={{
                   width: "200px",
                   position: "absolute",
-                  top: "50px",
-                  bottom: "50px",
+                  top: "60px",
+                  bottom: "90px",
                   transform: "rotate(90deg) scaleY(-1)",
                   transformOrigin: "0 0",
                 }}
