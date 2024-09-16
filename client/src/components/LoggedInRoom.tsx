@@ -8,10 +8,10 @@ import {
   User,
 } from "../services/api";
 import throttle from "lodash/throttle";
+import Draggable from "react-draggable";
 
 const sendHandPosition = throttle(
   (socket: WebSocket, userId: string, handPosition: number) => {
-    console.log("called");
     socket?.send(
       JSON.stringify({
         type: "handPosition",
@@ -21,7 +21,8 @@ const sendHandPosition = throttle(
     );
   },
   // TODO: Increase this after switching to a custom input that allows transition animations.
-  1_000 / 60
+  1_000 / 60,
+  { leading: true, trailing: true }
 );
 
 const LoggedInRoom: React.FC = () => {
@@ -125,27 +126,56 @@ const LoggedInRoom: React.FC = () => {
               <span>{user.name}</span>
             )}
 
-            <input
-              disabled={user.id !== userId}
-              type="range"
-              min={0}
-              max={1}
-              step={0.01}
-              value={user.handPosition}
-              onChange={(e) => {
-                setUsers((users) =>
-                  users.map((u) =>
-                    u.id === user.id
-                      ? { ...u, handPosition: parseFloat(e.target.value) }
-                      : u
-                  )
-                );
+            <div
+              style={{ position: "relative", width: "280px", height: "250px" }}
+            >
+              <img
+                src="/arm.svg"
+                alt="Arm"
+                style={{
+                  width: "200px",
+                  position: "absolute",
+                  top: "50px",
+                  bottom: "50px",
+                  transform: "rotate(90deg) scaleY(-1)",
+                  transformOrigin: "0 0",
+                }}
+              />
 
-                if (socket != null) {
-                  sendHandPosition(socket, user.id, parseFloat(e.target.value));
-                }
-              }}
-            />
+              <Draggable
+                disabled={user.id !== userId}
+                axis="y"
+                bounds="parent"
+                position={{ x: 0, y: (1 - user.handPosition) * 150 }}
+                onDrag={(_, data) => {
+                  let handPosition = 1 - data.y / 150;
+                  if (handPosition < 0) {
+                    handPosition = 0;
+                  }
+
+                  setUsers((users) =>
+                    users.map((u) =>
+                      u.id === user.id ? { ...u, handPosition } : u
+                    )
+                  );
+
+                  if (socket) {
+                    sendHandPosition(socket, user.id, handPosition);
+                  }
+                }}
+              >
+                <img
+                  src="/arm.svg"
+                  alt="Hand"
+                  draggable={false}
+                  style={{
+                    width: "200px",
+                    position: "absolute",
+                    right: "0",
+                  }}
+                />
+              </Draggable>
+            </div>
           </li>
         ))}
       </ul>
