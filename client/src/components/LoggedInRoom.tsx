@@ -146,9 +146,9 @@ const LoggedInRoom: React.FC = () => {
                 disabled={user.id !== userId}
                 axis="y"
                 bounds="parent"
-                position={{ x: 0, y: (1 - user.handPosition) * 150 }}
+                position={{ x: 0, y: (1 - user.handPosition) * 200 }}
                 onDrag={(_, data) => {
-                  let handPosition = 1 - data.y / 150;
+                  let handPosition = 1 - data.y / 200;
                   if (handPosition < 0) {
                     handPosition = 0;
                   }
